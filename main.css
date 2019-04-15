@@ -9,7 +9,7 @@ body {
     padding: 0;
 }
 
-#player0 {
+.newplayer {
     background-color: black;
     height: 30px;
     width: 30px;

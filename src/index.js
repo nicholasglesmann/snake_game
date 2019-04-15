@@ -5,8 +5,8 @@ var playerHeight = 30;
 var playerColor = "black";
 var foodXPosition = 200;
 var foodYPosition = 200;
-var moveInterval = 5;
-var gameInterval = 15;
+var moveInterval = 12.5;
+var gameInterval = 20;
 var playerXPosition;
 var playerYPosition;
 
@@ -144,8 +144,7 @@ function collectFood () {
 }
 
 function addBodyPart () {
-   // let newBodyPartXPosition = findNewBodyPartXPosition();
-   // let newBodyPartYPosition = findNewBodyPartYPosition();
+   // creates 10 new body parts, evenly spaced
    for (i = 0; i < 10; i++) {
     let newBodyPart = new bodyPart(playerLength[playerLength.length - 1].playerXPosition, playerLength[playerLength.length - 1].playerYPosition);
     playerLength[playerLength.length] = newBodyPart;
@@ -155,15 +154,11 @@ function addBodyPart () {
     //set the id of the new body part div
     let newBodyPartName = "player" + (playerLength.length - 1);
     newDiv.id = newBodyPartName;
+    //set the class of the new body part div
+    newDiv.classList = "newplayer";
     //style the new body part div
     document.getElementById(newBodyPartName).style.top = playerLength[playerLength.length - 1].playerYPosition + "px";
     document.getElementById(newBodyPartName).style.left = playerLength[playerLength.length - 1].playerXPosition + "px";
-    document.getElementById(newBodyPartName).style.backgroundColor = playerColor;
-    document.getElementById(newBodyPartName).style.height = playerHeight + "px";
-    document.getElementById(newBodyPartName).style.width = playerWidth + "px";
-    document.getElementById(newBodyPartName).style.position = "absolute";
-    document.getElementById(newBodyPartName).style.padding = "0";
-    document.getElementById(newBodyPartName).style.margin = "0";
    }
 }
 
