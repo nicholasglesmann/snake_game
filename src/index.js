@@ -3,10 +3,12 @@ var playerDirection = "Up";
 var playerWidth = 30;
 var playerHeight = 30;
 var playerColor = "black";
+var playerScore = 0;
 var foodXPosition = 200;
 var foodYPosition = 200;
-var moveInterval = 12.5;
-var gameInterval = 20;
+var moveInterval = 5;
+var gameInterval = 18;
+var gameSpeedIncreaseInterval = 3;
 var playerXPosition;
 var playerYPosition;
 
@@ -27,41 +29,26 @@ function bodyPart(newXPosition, newYPosition) {
 
 window.onload = newGame;
 
-var keyPress = addEventListener("keydown", move);
-var gameTime = window.setInterval(move, gameInterval);
+var keyPress = addEventListener("keydown", gameLoop);
+var gameTime = window.setInterval(gameLoop, gameInterval);
 
 
-function newGame () {
+function newGame() {
     food.style.top = foodYPosition + "px";
     food.style.left = foodXPosition + "px";
     let newBodyPart = new bodyPart(startingXPosition, startingYPosition);
     playerLength[0] = newBodyPart;
 }
 
-function move () {
-    //player movement: checks the direction the player is currently moving, then adds a new head element at the beginning of the playerLength array with the new x/y coordinates based on the direction
-    if(playerDirection == "Up") {
-            let newBodyPart = new bodyPart(playerLength[0].playerXPosition, (playerLength[0].playerYPosition -= moveInterval));
-            playerLength.unshift(newBodyPart);
-    } else if (playerDirection == "Down") {
-            let newBodyPart = new bodyPart(playerLength[0].playerXPosition, (playerLength[0].playerYPosition += moveInterval));
-            playerLength.unshift(newBodyPart);
-    } else if (playerDirection == "Left") {
-            let newBodyPart = new bodyPart((playerLength[0].playerXPosition -= moveInterval), playerLength[0].playerYPosition);
-            playerLength.unshift(newBodyPart);
-    } else if (playerDirection == "Right") {
-            let newBodyPart = new bodyPart((playerLength[0].playerXPosition += moveInterval), playerLength[0].playerYPosition);
-            playerLength.unshift(newBodyPart);
-    }
-
-    //removes the old tail from the array
-    playerLength.pop();
+function gameLoop() {
+    movePlayer();
     
     //check for food hit
-    if (checkFoodHitDetection() == true) {
+    if (checkFoodHitDetection()) {
         collectFood();
         spawnFood();
         addBodyPart();
+        increaseGameSpeed();
     }
 
     //updates player position on the screen
@@ -88,6 +75,27 @@ function move () {
     }      
 }
 
+
+function movePlayer() {
+    //player movement: checks the direction the player is currently moving, then adds a new head element at the beginning of the playerLength array with the new x/y coordinates based on the direction
+    if(playerDirection == "Up") {
+        let newBodyPart = new bodyPart(playerLength[0].playerXPosition, (playerLength[0].playerYPosition -= moveInterval));
+        playerLength.unshift(newBodyPart);
+    } else if (playerDirection == "Down") {
+        let newBodyPart = new bodyPart(playerLength[0].playerXPosition, (playerLength[0].playerYPosition += moveInterval));
+        playerLength.unshift(newBodyPart);
+    } else if (playerDirection == "Left") {
+        let newBodyPart = new bodyPart((playerLength[0].playerXPosition -= moveInterval), playerLength[0].playerYPosition);
+        playerLength.unshift(newBodyPart);
+    } else if (playerDirection == "Right") {
+        let newBodyPart = new bodyPart((playerLength[0].playerXPosition += moveInterval), playerLength[0].playerYPosition);
+        playerLength.unshift(newBodyPart);
+    }
+
+    //removes the old tail from the array
+    playerLength.pop();
+}
+
 //function that iterates through the playerLength array and prints all the body parts to the screen
 function printPlayerPosition () {
     for (i = 0; i < playerLength.length; i++) {
@@ -96,6 +104,22 @@ function printPlayerPosition () {
         //print to screen
         document.getElementById(bodyPart).style.top = playerLength[i].playerYPosition + "px";
         document.getElementById(bodyPart).style.left = playerLength[i].playerXPosition + "px";
+        //document.getElementById(bodyPart).parentNode.removeChild(document.getElementById(bodyPart));
+    }
+}
+
+function increaseGameSpeed() {
+    if(playerScore == 35) {
+        gameSpeedIncreaseInterval--;
+        if(playerScore == 45)
+            gameSpeedIncreaseInterval--;
+    }
+
+    if(playerScore % gameSpeedIncreaseInterval == 0) {
+        gameInterval--;
+        window.clearInterval(gameTime);
+        gameTime = window.setInterval(gameLoop, gameInterval);
+        console.log("Speed Increased");
     }
 }
 
@@ -107,7 +131,7 @@ function spawnFood(){
     foodYPosition = createFoodYPosition();
     food.style.top = foodYPosition + "px";
     food.style.left = foodXPosition + "px";
-  } while (checkFoodHitDetection() == true);
+  } while (checkFoodHitDetection());
 }
 
 //create random x position for food spawn
@@ -140,7 +164,7 @@ function checkPlayerHitDetection () {
 }
 
 function collectFood () {
-    //alert("hit");
+    playerScore++;
 }
 
 function addBodyPart () {
