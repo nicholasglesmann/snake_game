@@ -4,7 +4,7 @@ class SnakeGame {
         this.playerDirection = "Up";
         this.playerScore = 0;
         this.food = {};
-        this.moveInterval = 2;
+        this.moveInterval = 1;
         this.gameInterval = 12;
         this.gameSpeedIncreaseInterval = 4;
         this.stageReduction = 0;
@@ -16,7 +16,9 @@ class SnakeGame {
         this.yPosition;
 
         this.keyPress;
-        this.gameTime;
+        this.gameTime1;
+        this.gameTime2;
+        //this.gameTime3;
 
         this.canvas;
         this.context;
@@ -55,7 +57,9 @@ class SnakeGame {
         
         ////////// Main Method Bindings //////////
         this.newGame = this.newGame.bind(this);
-        this.gameLoop = this.gameLoop.bind(this);
+        this.gameLoop1 = this.gameLoop1.bind(this);
+        this.gameLoop2 = this.gameLoop2.bind(this);
+        //this.gameLoop3 = this.gameLoop3.bind(this);
         this.increaseDifficulty = this.increaseDifficulty.bind(this);
         this.gameOver = this.gameOver.bind(this);
 
@@ -95,8 +99,11 @@ class SnakeGame {
     ////////// Main Methods //////////
 
     newGame() {
-        this.keyPress = addEventListener("keydown", this.gameLoop);
-        this.gameTime = window.setInterval(this.gameLoop, this.gameInterval);
+        this.keyPress = addEventListener("keydown", this.gameLoop1);
+        this.gameTime1 = window.setInterval(this.gameLoop1, this.gameInterval);
+        this.gameTime2 = window.setInterval(this.gameLoop2, this.gameInterval);
+        //this.gameTime3 = window.setInterval(this.gameLoop3, this.gameInterval);
+
 
         //create canvas (playArea)
         this.canvas = document.createElement("canvas");
@@ -125,34 +132,69 @@ class SnakeGame {
         console.log("Game Loaded.");     
     }
 
-    gameLoop() {
+    gameLoop1() {
         this.resizeStage();
 
         this.movePlayer();
 
         this.checkFoodHit();
 
-        this.checkGameOver();
+        this.checkGameOverWall();
+
+        this.checkGameOverPlayer();
 
         this.printAllObjectPositions();
 
         this.checkKeyPress();
     }
 
+    gameLoop2() {
+        this.movePlayer();
+
+        this.checkFoodHit();
+
+        this.checkGameOverWall();
+
+        this.printAllObjectPositions();
+
+        this.checkKeyPress();
+    }
+
+    // gameLoop3() {
+    //     this.movePlayer();
+
+    //     this.checkFoodHit();
+
+    //     this.checkGameOverWall();
+
+    //     this.printAllObjectPositions();
+
+    //     this.checkKeyPress();
+    // }
+
+
+
     increaseDifficulty() {
         this.increasePlayerSpeed();
         this.decreaseStageSize();
     }
 
-    checkGameOver() {
-        if(this.checkWallHit(this.playerLength[0]) || this.checkPlayerHit()) {
-            window.clearInterval(this.gameTime);
+    checkGameOverWall() {
+        if(this.checkWallHit(this.playerLength[0])) {
+            window.setTimeout(this.gameOver, 50);
+        }
+    }
 
+    checkGameOverPlayer() {
+        if(this.checkPlayerHit()) {
             window.setTimeout(this.gameOver, 50);
         }
     }
 
     gameOver() {
+        window.clearInterval(this.gameTime1);
+        window.clearInterval(this.gameTime2);
+        //window.clearInterval(this.gameTime3);
 
         this.context.fillStyle = "black";
 
@@ -198,8 +240,12 @@ class SnakeGame {
 
         if(this.playerScore % this.gameSpeedIncreaseInterval == 0) {
             this.gameInterval--;
-            window.clearInterval(this.gameTime);
-            this.gameTime = window.setInterval(this.gameLoop, this.gameInterval);
+            window.clearInterval(this.gameTime1);
+            window.clearInterval(this.gameTime2);
+            //window.clearInterval(this.gameTime3);
+            this.gameTime1 = window.setInterval(this.gameLoop1, this.gameInterval);
+            this.gameTime2 = window.setInterval(this.gameLoop2, this.gameInterval);
+            //this.gameTime3 = window.setInterval(this.gameLoop3, this.gameInterval);
             console.log("Speed Increased...");
             console.log("Speed Interval is now " + this.gameInterval);
         }
@@ -225,10 +271,17 @@ class SnakeGame {
                 this.spawnFood();
                 console.log("Food repositioned during Stage Resize.");
             }
-            // this.canvas.style.top = (this.yPlayAreaStartPosition + this.stageReduction) + "px";
-            // this.canvas.style.left = (this.xPlayAreaStartPosition + this.stageReduction) + "px";
-            // this.canvas.width = this.widthOfPlayArea - (this.stageReduction * 2);
-            // this.canvas.height = this.heightOfPlayArea - (this.stageReduction *2);
+
+            for(let i = 32; i < this.playerLength.length; i+= 15 ) {
+                if(this.checkWallHit(this.playerLength[i])) {
+                    // window.clearInterval(this.gameTime1);
+                    // window.clearInterval(this.gameTime2);
+                    // window.clearInterval(this.gameTime3);
+        
+                    window.setTimeout(this.gameOver, 50);
+                }
+            }
+
         }
         if(this.stageReduction > this.targetStageReduction) {
             this.stageReduction = Math.floor(this.stageReduction);
